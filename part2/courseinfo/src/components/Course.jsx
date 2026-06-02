@@ -3,7 +3,7 @@ import Parts from './Parts'
 import Content from './Content'
 import Total from './Total'
 
-const Course = ({course}) => {
+const Course = ({course, key}) => {
     const totalEx = course.parts.reduce((sum, part) => {
         return sum + part.exercises
     }, 0)
