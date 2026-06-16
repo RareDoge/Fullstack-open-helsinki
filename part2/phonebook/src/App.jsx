@@ -4,19 +4,21 @@ import Name from './components/Name'
 import Persons from './components/Persons'
 import PersonForm from './components/PersonForm'
 import Filter from './components/Filter'
+import services from './services/people.js'
+import Notification from './components/Notification'
 
 const App = () => {
   const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setNewFilter] = useState('')
+  const [message, setNewMessage] = useState(null)
+
+  const URL = 'http://localhost:3001/persons'
 
   const hook = () => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        setPersons(response.data)
-      })
+    services.getAll()
+      .then(response => {setPersons(response)})
   }
   useEffect(hook , [])
 
@@ -27,16 +29,25 @@ const App = () => {
       id: persons.length + 1,
       number: newNumber
     }
+
     if(persons.some(person => person.name === newName))
     {
       alert(`${newName} is already added to phonebook`)
     }
     else
     {
-    setPersons(persons.concat(nameObject))
+    services.create(nameObject).then(
+      response => {
+        setPersons(persons.concat(response))
+      }
+    )
+    setNewMessage(`Added ${newName}`)
+    setTimeout(() => {
+      setNewMessage(null)
+    }, 5000);
+    }
     setNewName('')
     setNewNumber('')
-    }
   }
 
   const handleNameChange = (event) => {
@@ -52,21 +63,34 @@ const App = () => {
   }
 
   // need to update display as i type into filter
-  const personsToShow = (filter === "") ? persons 
+const personsToShow = (filter === "") ? persons 
   : persons.filter(
     person => person.name.toLowerCase().startsWith(
       filter.toLowerCase() )
     )
 
+  const deletePerson = (id) => {
+    const name = persons.find(name => name.id === id)
+      if(window.confirm(`Confirm Delete ${name.name}?`))
+      {
+        services.remove(id)
+        setPersons(persons.filter(person => person.id !== id))
+      }
+      else{
+        console.log("okay...")
+      }
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message}/>
       <Filter handleFilter={handleFilter}/>
       <h2>Add a new</h2>
       <PersonForm addName={addName} newName={newName} handleNameChange={handleNameChange}
         newNumber={newNumber} handleNumberChange={handleNumberChange} />
       <h2>Numbers</h2>
-      <Persons personsToShow={personsToShow}/>
+      <Persons personsToShow={personsToShow} deletePerson={deletePerson} />
     </div>
   )
 }
