@@ -1,0 +1,27 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Test \"hello world\" application",
+  "homepage": "https://github.com/RareDoge/Fullstack-open-helsinki#readme",
+  "bugs": {
+    "url": "https://github.com/RareDoge/Fullstack-open-helsinki/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RareDoge/Fullstack-open-helsinki.git"
+  },
+  "license": "ISC",
+  "author": "Raredoge",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "myOwnScript": "echo Hi corey! This is your script!",
+    "dev": "node --watch index.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1"
+  }
+}
