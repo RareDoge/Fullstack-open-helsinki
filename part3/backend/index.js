@@ -17,34 +17,27 @@ app.use(express.json())
 app.use(requestLogger)
 
 app.get('/', (request, response) => {
-    response.send('<h1>Hello World!</h1>')
+  response.send('<h1>Hello World!</h1>')
 })
 
 
-app.get('/api/notes', (request,response)=>{
+app.get('/api/notes', (request,response) => {
   Note.find({}).then(notes => {
     response.json(notes)
   })
 })
 
-app.get('/api/notes/:id', (request,response, next)=>{
-    const id = request.params.id
-    Note.findById(id).then(note => {
-      if(note){
-        response.json(note)
-      } else{
-        response.status(404).end()
-      }
-    })
+app.get('/api/notes/:id', (request,response, next) => {
+  const id = request.params.id
+  Note.findById(id).then(note => {
+    if(note){
+      response.json(note)
+    } else{
+      response.status(404).end()
+    }
+  })
     .catch(error => next(error))
 })
-
-const generateId = () => {
-  const maxId = notes.length > 0
-    ? Math.max(...notes.map(n => Number(n.id)))
-    : 0
-  return String(maxId + 1)
-}
 
 app.post('/api/notes', (request, response, next) => {
   const body = request.body
@@ -63,27 +56,25 @@ app.post('/api/notes', (request, response, next) => {
   note.save()
     .then(savedNote => {
       response.json(savedNote)
-  })
-  .catch(error => next(error))
+    })
+    .catch(error => next(error))
 
 })
 
-app.delete('/api/notes/:id', (request, response) => {
-    const id = request.params.id
-    Note.findByIdAndDelete(id).then(result => {
-      response.status(204).end()
-    })
+app.delete('/api/notes/:id', (request, response, next) => {
+  const id = request.params.id
+  Note.findByIdAndDelete(id).then(response.status(204).end())
     .catch(error => next(error))
 })
 
 app.put('/api/notes/:id', (request, response) => {
-  const {content, important} = request.body
+  const { content, important } = request.body
 
   Note.findById(request.params.id)
-  .then(note => {
-    if(!note){
-      return response.status(404).end()
-    }
+    .then(note => {
+      if(!note){
+        return response.status(404).end()
+      }
 
     note.content = content
     note.important = important

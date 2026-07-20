@@ -1,10 +1,5 @@
 const mongoose = require('mongoose')
 
-// if(process.argv.length < 4){
-//     console.log('include password, name, phone number in arguments')
-//     process.exit(1)
-// }
-
 const password = encodeURIComponent(process.argv[2])
 const url = `mongodb+srv://Raredoge:${password}@cluster0.uqkkbdi.mongodb.net/Phonebook?appName=Cluster0`
 

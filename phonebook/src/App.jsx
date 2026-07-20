@@ -13,6 +13,7 @@ const App = () => {
   const [newNumber, setNewNumber] = useState('')
   const [filter, setNewFilter] = useState('')
   const [message, setNewMessage] = useState(null)
+  const [msgType, setMsgType] = useState(null)
 
   const URL = 'http://localhost:3001/api/persons'
 
@@ -24,26 +25,43 @@ const App = () => {
 
   const addName = (event) => {
     event.preventDefault()
-    const nameObject = {
-      name : newName,
-      id: persons.length + 1,
-      number: newNumber
-    }
 
     if(persons.some(person => person.name === newName))
     {
-      alert(`${newName} is already added to phonebook`)
+      if(window.confirm(`Update number for ${newName}?`))
+      {
+        const targetPerson = persons.find(person => person.name === newName)
+
+        const updateNum = {
+        ...targetPerson,
+        number: newNumber
+      }
+
+      services.update(targetPerson.id, updateNum)
+        .then(returnedPerson =>{
+          setPersons(persons.map(person => person.id === targetPerson.id ? returnedPerson : person))
+      })
+    }
     }
     else
     {
+    const nameObject = {
+      name : newName,
+      number: newNumber,
+    }
     services.create(nameObject).then(
       response => {
         setPersons(persons.concat(response))
+        setMsgType('success')
+        setNewMessage(`Added ${newName}`)
       }
-    )
-    setNewMessage(`Added ${newName}`)
+    ).catch(error => {
+      setMsgType('error')
+      setNewMessage(error.response.data.error)
+    })
     setTimeout(() => {
       setNewMessage(null)
+      setMsgType(null)
     }, 5000);
     }
     setNewName('')
@@ -84,7 +102,7 @@ const personsToShow = (filter === "") ? persons
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={message}/>
+      <Notification message={message} msgType={msgType}/>
       <Filter handleFilter={handleFilter}/>
       <h2>Add a new</h2>
       <PersonForm addName={addName} newName={newName} handleNameChange={handleNameChange}
